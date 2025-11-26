@@ -1,0 +1,39 @@
+# PacStac Verification Demo
+
+Next.js + RainbowKit demo that signs a message and verifies STAC (PacStac) token balances on Arbitrum Sepolia. Includes Base/Base Sepolia support for wallet connections.
+
+## Requirements
+- Node.js 18+
+- npm (or pnpm/yarn)
+- RainbowKit Cloud project id for WalletConnect (or use the demo default)
+
+## Setup
+```bash
+npm install
+```
+
+## Configuration
+Create a `.env.local` for local development (values can come from public RPCs for testing):
+```ini
+NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID=<walletconnect_project_id_or_demo>
+NEXT_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL=<arbitrum_sepolia_rpc>
+NEXT_PUBLIC_BASE_RPC_URL=<base_mainnet_rpc_optional>
+NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL=<base_sepolia_rpc_optional>
+PACSTAC_REQUIRED_AMOUNT=1
+STAC_TOKEN_DECIMALS=18
+```
+
+Notes:
+- The STAC contract for this demo is hardcoded in `src/app/api/web3/verify/route.ts` as `0xcC8fdca1077CFD74BFD674B3763BB9eA5DDFaDEf` (public Arbitrum Sepolia deployment).
+- If you provide private RPC URLs, keep them in non-committed env files.
+
+## Running
+```bash
+npm run dev
+```
+Open `http://localhost:3000` and click “Try the verifier” (route: `/pacstac-verification-demo`).
+
+## What it does
+1) RainbowKit connects a wallet on Arbitrum Sepolia/Base/Base Sepolia.  
+2) User signs a one-time message: `Verify PacStac ownership for user <userId> at <timestamp>`.  
+3) API verifies the signature and checks the STAC token balance via viem; response indicates if the balance meets `PACSTAC_REQUIRED_AMOUNT`.
