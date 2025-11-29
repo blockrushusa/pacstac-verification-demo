@@ -3,18 +3,14 @@ import { http } from "wagmi";
 import { arbitrumSepolia, base, baseSepolia } from "wagmi/chains";
 
 const ARBITRUM_SEPOLIA_RPC_URL =
-  process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL ??
-  process.env.ARBITRUM_SEPOLIA_RPC_URL ??
+  (process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL ?? "").trim() ||
   arbitrumSepolia.rpcUrls.default.http[0];
 
 const BASE_RPC_URL =
-  process.env.NEXT_PUBLIC_BASE_RPC_URL ??
-  process.env.BASE_RPC_URL ??
-  base.rpcUrls.default.http[0];
+  (process.env.NEXT_PUBLIC_BASE_RPC_URL ?? "").trim() || base.rpcUrls.default.http[0];
 
 const BASE_SEPOLIA_RPC_URL =
-  process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL ??
-  process.env.BASE_SEPOLIA_RPC_URL ??
+  (process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL ?? "").trim() ||
   baseSepolia.rpcUrls.default.http[0];
 
 export const chains = [arbitrumSepolia, base, baseSepolia];

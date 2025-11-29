@@ -3,14 +3,8 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
-
-type VerifyResponse = {
-  verified: boolean;
-  balance: string;
-  threshold: string;
-  pacstacAddress?: string;
-  message?: string;
-};
+import { verifyPacStac, VerifyResponse } from "@/lib/verification";
+import type { Address } from "viem";
 
 const DEFAULT_USER_ID = "demo-user";
 
@@ -38,7 +32,8 @@ export default function PacStacVerificationPage() {
 
     const timestamp = Date.now();
     setLatestTimestamp(timestamp.toString());
-    const message = `Verify PacStac ownership for user ${userId || DEFAULT_USER_ID} at ${timestamp}`;
+    const resolvedUserId = userId || DEFAULT_USER_ID;
+    const message = `Verify PacStac ownership for user ${resolvedUserId} at ${timestamp}`;
 
     try {
       setIsVerifying(true);
@@ -50,27 +45,19 @@ export default function PacStacVerificationPage() {
 
       setStatus("Checking on-chain balance...");
 
-      const response = await fetch("/api/web3/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          address,
-          signature,
-          message,
-          timestamp,
-          userId: userId || DEFAULT_USER_ID,
-        }),
+      const verification = await verifyPacStac({
+        address: address as Address,
+        signature,
+        message,
+        timestamp,
+        userId: resolvedUserId,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Verification failed.");
-      }
-
-      setResult(data);
+      setResult(verification);
       setStatus(
-        data.verified ? "Wallet meets the PacStac threshold" : "Balance below threshold",
+        verification.verified
+          ? "Wallet meets the PacStac threshold"
+          : "Balance below threshold",
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -141,9 +128,7 @@ export default function PacStacVerificationPage() {
           )}
 
           <div className="code-block">
-            {`Verify PacStac ownership for user ${userId || DEFAULT_USER_ID} at ${
-              latestTimestamp ?? "timestamp loading..."
-            }`}
+            {`Verify PacStac ownership for user ${userId || DEFAULT_USER_ID} at ${latestTimestamp ?? "timestamp loading..."}`}
           </div>
         </div>
 
