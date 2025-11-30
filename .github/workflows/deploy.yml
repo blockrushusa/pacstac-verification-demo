@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '20'
       - run: npm install --legacy-peer-deps
-      - run: npx next build && npx next export
+      - run: npx next build
       - uses: actions/configure-pages@v5
         with:
           static_site_generator: next
