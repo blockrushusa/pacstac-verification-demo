@@ -26,23 +26,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install dependencies
-        run: npm install
-      - name: Build Next.js
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - run: npm install --legacy-peer-deps
+      - run: npx next build && npx next export
+      - uses: actions/configure-pages@v5
         with:
           static_site_generator: next
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v4
+        id: deployment
